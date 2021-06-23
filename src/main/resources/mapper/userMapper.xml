@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.mapper.hsj.UserMapper">
+	<!-- parameterType:代表sql语句执行时会接收到的参数的类型 
+		#{}:代表sql语句执行时会接收到的参数的值 
+		resultType:代表查询结果的包装类型 -->
+
+	<resultMap id="userMap" type="cn.entity.User" >
+		<id column="user_id" property="userId" javaType="java.lang.Integer"/>
+		<result column="userNickName" property="userNickName" javaType="java.lang.String"/>
+		<result column="password" property="password" javaType="java.lang.String"/>
+		<result column="userRealName" property="userRealName" javaType="java.lang.String"/>
+		<result column="sex" property="sex" javaType="java.lang.String"/>
+		<result column="tel" property="tel" javaType="java.lang.String"/>
+		<result column="email" property="email" javaType="java.lang.String"/>
+		<result column="user_image" property="userImg" javaType="java.lang.String"/>
+		<result column="role_id" property="roleId" javaType="java.lang.Integer"/>
+
+<!--       <association property="role" javaType="cn.entity.Role">
+	       <id column="role_id" property="roleId" javaType="java.lang.Integer"></id>
+	       <result column="role_name" property="roleName" javaType="java.lang.String"/>
+       </association>-->
+   </resultMap>
+
+
+<!--    <select id="countRowsByCondition" resultType="java.lang.Integer">
+		select count(*) from t_user
+		<where>
+			<if test="userNickName!=null and userNickName!=''">
+				and userNickName like '%${userNickName}%'
+			</if>
+			<if test="tel!=null and tel!=''">
+				and tel like '%${tel}%'
+			</if>
+			<if test="roleId!=null and roleId>0">
+				and role_id = #{roleId,jdbcType=INTEGER}
+			</if>
+		</where>
+	</select>-->
+
+    <select id="selectUserByCondition" resultMap="userMap">
+        select * from t_user
+		<where>
+			<if test="userNickName!=null and userNickName!=''">
+				and userNickName like '%${userNickName}%'
+			</if>
+			<if test="tel!=null and tel!=''">
+				and tel like '%${tel}%'
+			</if>
+			<if test="roleId!=null and roleId>0">
+				and role_id = #{roleId,jdbcType=INTEGER}
+			</if>
+		</where>
+    </select>
+
+<!--     <select id="selectUserByCondition4" resultMap="userMap">
+        select u.id user_id,u.userCode,u.userName,u.userPassword,u.gender,
+        	   u.birthday,u.phone,u.address,u.createdBy user_createdBy,
+        	   u.creationdatetime user_creationdatetime,u.modifyBy user_modifyBy,
+        	   u.modifydatetime user_modifydatetime,u.userRole,
+        	   r.id role_id,r.roleCode,r.roleName,
+        	   r.createdBy role_createdBy,r.creationdatetime role_creationdatetime,
+        	   r.modifydatetime role_modifydatetime,r.modifyBy role_modifyBy
+		from smbms_user u,smbms_role r
+		<where>
+			and u.userRole = r.id
+			<if test="userName!=null and userName!=''">
+				and u.userName like '%${userName}%'
+			</if>
+			<if test="userRole!=null and userRole>0">
+				and u.userRole = #{userRole}
+			</if>
+		</where>
+		order by u.creationdatetime desc
+		<if test="pageId!=null and pageId>0">
+			limit ${(pageId-1)*pageSize},${pageSize}
+		</if>
+    </select> -->
+
+	<insert id="insertUser" parameterType="cn.entity.User">
+		insert into t_user(userNickName,password,userRealName,sex,tel,email,user_image,role_id)
+		values (#{userNickName,jdbcType=VARCHAR},
+		#{passWord,jdbcType=VARCHAR},
+		#{userRealName,jdbcType=VARCHAR},
+		#{sex,jdbcType=VARCHAR},
+		#{tel,jdbcType=VARCHAR},
+		#{email,jdbcType=VARCHAR},
+		#{userImg,jdbcType=VARCHAR},
+		#{roleId,jdbcType=INTEGER})
+	</insert>
+	
+	<delete id="deleteUser" parameterType="java.lang.Integer">
+		delete from t_user
+		where user_id=#{userId,jdbcType=INTEGER}
+	</delete>
+	
+	<select id="selectUserByNickName" parameterType="java.lang.String" resultMap="userMap">
+		select *
+		from t_user
+		<where>
+			<if test="_parameter!=null and _parameter!=''">
+				and userNickName = #{userNickName,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+
+	<select id="selectUserByTel" parameterType="java.lang.String" resultMap="userMap">
+		select *
+		from t_user
+		<where>
+			<if test="_parameter!=null and _parameter!=''">
+				and tel = #{tel,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+    
+    <select id="selectUserById" parameterType="java.lang.Integer" resultMap="userMap">
+		select *
+		from t_user
+		where user_id = #{userId,jdbcType=INTEGER}
+	</select>
+	
+	<update id="updateUser" parameterType="cn.entity.User">
+		update t_user
+		set userNickName=#{userNickName,jdbcType=VARCHAR},
+			password=#{passWord,jdbcType=VARCHAR},
+			userRealName=#{userRealName,jdbcType=VARCHAR},
+			sex=#{sex,jdbcType=VARCHAR},
+			tel=#{tel,jdbcType=VARCHAR},
+			email=#{email,jdbcType=VARCHAR},
+			user_image=#{userImg,jdbcType=VARCHAR},
+			role_id=#{roleId,jdbcType=INTEGER}
+		where user_id=#{userId,jdbcType=INTEGER}
+	</update>
+
+</mapper>
